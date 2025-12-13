@@ -51,11 +51,7 @@ jobs:
         cmake .. \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_STANDARD=17 \
-          -DCMAKE_CXX_FLAGS="
--Wno-error=array-bounds   
--Wno-error=uninitialized -Wno-error=deprecated-declarations
--Wno-array-bounds
--Wno-stringop-overflow"
+          -DCMAKE_CXX_FLAGS="-Wno-error=array-bounds -Wno-error=uninitialized -Wno-error=deprecated-declarations -Wno-array-bounds -Wno-stringop-overflow"
         # 开始并行编译
         cmake --build . -j4
 
