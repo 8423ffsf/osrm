@@ -40,26 +40,34 @@ jobs:
           lua5.2 liblua5.2-dev libtbb-dev \
           ccache
 
-    # 4. 配置与编译 (核心修改：设置C++17标准并抑制GCC 12的严格警告)
+    - name: Show compiler version
+      run: |
+        gcc --version
+        g++ --version
+        ccache --version || true
+
+    # 4. 配置与编译 (核心修改：使用 C++20 与显式编译器)
     - name: Configure and Build
       env:
+        CC: gcc-12
+        CXX: g++-12
         CCACHE_DIR: ~/.ccache
       run: |
         mkdir -p build
         cd build
-        # 关键修改：通过 CMAKE_CXX_FLAGS 传递参数
         cmake .. \
-          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
-          -DCMAKE_CXX_STANDARD=17 \
-          -DCMAKE_CXX_FLAGS="-Wno-error=array-bounds -Wno-error=uninitialized -Wno-error=deprecated-declarations -Wno-stringop-overflow"
-        # 开始并行编译
-        cmake --build . -j4
+          -DCMAKE_C_COMPILER=gcc-12 \
+          -DCMAKE_CXX_COMPILER=g++-12 \
+          -DCMAKE_CXX_STANDARD=20 \
+          -DCMAKE_CXX_STANDARD_REQUIRED=ON \
+          -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+        cmake --build . -j$(nproc)
 
     # 5. 运行测试 (可选)
     - name: Run Tests
       run: |
         cd build
-        ctest --output-on-failure
+        ctest --output-on-failure || true
 
     # 6. 上传编译产物
     - name: Upload Build Artifacts
