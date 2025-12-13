@@ -47,12 +47,10 @@ jobs:
       run: |
         mkdir -p build
         cd build
-        # 关键修改：通过 CMAKE_CXX_FLAGS 传递参数
         cmake .. \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_STANDARD=17 \
           -DCMAKE_CXX_FLAGS="-Wno-error=array-bounds -Wno-error=uninitialized -Wno-error=deprecated-declarations -Wno-array-bounds -Wno-stringop-overflow"
-        # 开始并行编译
         cmake --build . -j4
 
     # 5. 运行测试 (可选)
