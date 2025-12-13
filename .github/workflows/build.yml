@@ -12,11 +12,9 @@ jobs:
     runs-on: ubuntu-22.04
 
     steps:
-    # 1. get codes
+    
     - name: Checkout repository
       uses: actions/checkout@v4
-
-    # 2. ccache cache
     - name: Setup ccache
       uses: actions/cache@v4
       with:
@@ -25,24 +23,22 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-ccache-osrm-
 
-    
     - name: Install dependencies
       run: |
         sudo apt-get update
-        
         sudo apt-get install -y gcc-12 g++-12
         sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-12 100
         sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-12 100
-        
         sudo apt-get install -y \
           build-essential git cmake pkg-config \
           libbz2-dev libxml2-dev libzip-dev libboost-all-dev \
           lua5.2 liblua5.2-dev libtbb-dev \
           ccache
 
-    
     - name: Configure and Build
       env:
+        CC: gcc-12
+        CXX: g++-12
         CCACHE_DIR: ~/.ccache
       run: |
         mkdir -p build
@@ -50,7 +46,7 @@ jobs:
         cmake .. \
           -DCMAKE_CXX_COMPILER_LAUNCHER=ccache \
           -DCMAKE_CXX_STANDARD=17 \
-          -DCMAKE_CXX_FLAGS="-Wno-error=array-bounds -Wno-error=uninitialized -Wno-error=deprecated-declarations -Wno-array-bounds -Wno-stringop-overflow"
+          -DCMAKE_CXX_FLAGS="-Wno-error=array-bounds -Wno-error=uninitialized -Wno-error=deprecated-declarations -Wno-stringop-overflow"
         cmake --build . -j4
 
     
